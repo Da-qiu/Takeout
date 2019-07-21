@@ -9,14 +9,15 @@
       <!-- 商家 -->
       <div class="merchant">商家</div>
     </nav>
-    <Nav></Nav>
-    <Content></Content>
+    <Goods></Goods>
+    <Footer></Footer>
   </div>
 </template>
 <script>
 import Header from './components/header/header.vue'
-import Nav from './components/nav/nav.vue'
-import Content from './components/content/content.vue'
+import Goods from './components/goods/goods.vue'
+import Footer from './components/footer/footer.vue'
+
 const ERR_OK = 0;
 
 export default {
@@ -30,14 +31,14 @@ export default {
       res = res.body;
       if (res.errno === ERR_OK) {
         this.seller = res.data;
-        console.log(this.seller);
+        // console.log(this.seller);
       }
     })
   },
   components:{
     Header,
-    Nav,
-    Content
+    Goods,
+    Footer
   }
 }
 </script>
@@ -47,9 +48,11 @@ export default {
     .navbar {
       width: 100%;
       height: 40px;
+      background-color: #fff;
       display: flex;
       align-items: center;
-      border-bottom: 1px solid red;
+      border-bottom: 1px solid rgba(7,17,27,0.1);
+      position: relative;
       div {
         flex: 1;
         line-height: 14px;
