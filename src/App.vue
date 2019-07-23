@@ -3,27 +3,25 @@
     <Header :seller="seller"></Header>
     <nav class="navbar">
       <!-- 商品 -->
-      <div class="product active">商品</div>
+      <router-link class="product" to="/goods" tag='div'>商品</router-link>
       <!-- 评价 -->
-      <div class="evaluate">评价</div>
+      <router-link class="evaluate" to="/ratings" tag='div'>评价</router-link>
       <!-- 商家 -->
-      <div class="merchant">商家</div>
+      <router-link class="merchant" to="/shops" tag='div'>商家</router-link>
     </nav>
-    <Goods></Goods>
-    <Footer></Footer>
+    <router-view></router-view>
   </div>
 </template>
 <script>
 import Header from './components/header/header.vue'
-import Goods from './components/goods/goods.vue'
-import Footer from './components/footer/footer.vue'
 
 const ERR_OK = 0;
 
 export default {
   data(){
     return {
-      seller: {}
+      seller: {},
+      goodsInfo: {}
     }
   },
   created() {
@@ -34,11 +32,13 @@ export default {
         // console.log(this.seller);
       }
     })
+    let info = localStorage.getItem('goodsInfo');
+    if(info) {
+      this.$store.commit('storeInit', JSON.parse(info));
+    }
   },
   components:{
-    Header,
-    Goods,
-    Footer
+    Header
   }
 }
 </script>

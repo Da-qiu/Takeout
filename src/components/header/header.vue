@@ -24,11 +24,11 @@
 			</div>				
       </div>
       <!-- 下边的公告 -->
-      <div class="announcement">
+      <div class="announcement" @click="showDetail">
 			  <span class="announcement-title"></span>
 			  <span class="announcement-tex">{{seller.bulletin}}</span>
 			  <i class="icon-keyboard_arrow_right"></i>
-		</div>
+		  </div>
     <div class="backgroud-ig">
       <img :src="seller.avatar" alt="背景模糊图" width="100%">
     </div>

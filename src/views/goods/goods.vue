@@ -1,16 +1,16 @@
 <template>
   <div class="goods">
     <!-- 左侧菜单 -->
-    <div class="menu-wrapper">
-      <ul>
-        <li v-for="(item, i) in goods" :key="i" :class='{active:false}'>
+    <div class="menu-wrapper" ref="menuWrapper">
+      <ul class="content">
+        <li v-for="(item, i) in goods" :key="i" @click="addActive(i)" :class='{active:active[i]}'>
           <span class="text">{{item.name}}</span>
         </li>
       </ul>
     </div>
     <!-- 右侧食物列表 -->
-    <div class="foods-wrapper">
-      <ul>
+    <div class="foods-wrapper" ref="foodsWrapper">
+      <ul ref="ulWrapper">
         <li class="food-list" v-for="(item, i) in goods" :key='i'>
           <h1 class="title">{{item.name}}</h1>
           <ul>
@@ -30,24 +30,25 @@
                   <span class="oldPrice" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
                 </div>
               </div>
-              <div class="choice">
-                <span class="reduce icon-remove_circle_outline"></span>
-                <span class="num">0</span>
-                <span class="add icon-add_circle"></span>
-              </div>
+              <Carcontrols class="carcontrols"></Carcontrols>
             </li>
           </ul>
         </li>
       </ul>
     </div>
+    <Footer></Footer>
   </div>
 </template>
 <script>
+import Bscroll from 'better-scroll'
+import Carcontrols from '../../components/carcontrols/carcontrols.vue'
+import Footer from '../../components/footer/footer.vue'
 const ERR_OK = 0;
 export default {
     data(){
       return {
-        goods: []
+        goods: [],
+        active: [1]
       }
     },
     props: {
@@ -55,14 +56,58 @@ export default {
         type: Object
       }
     },
+    components: {
+      Carcontrols,
+      Footer
+    },
     created() {
       this.$http.get('/api/goods').then(result => {
         result = result.body;
         if (result.errno === ERR_OK) {
           this.goods = result.data;
           // console.log(this.goods);
+          this.$nextTick(() => {
+            this.menuScroll = new Bscroll(this.$refs.menuWrapper,{mouseWheel: true, click: true, tap: true});
+            this.foodScroll = new Bscroll(this.$refs.foodsWrapper,{mouseWheel: true, click: true, tap: true, probeType: 3});
+            this.foodScroll.on('scroll', (e) => {
+              let height = Math.abs(e.y);
+              let lh = 0;
+              let index = 0;
+              let flis = document.querySelectorAll('.foods-wrapper>ul>li')
+              for(let i=0; i < flis.length; i++) {
+                lh += flis[i].offsetHeight;
+                if (lh > height) {
+                  index = i;
+                  let lis = document.querySelectorAll('.menu-wrapper ul li');
+                  for (let j=0; j < lis.length; j++) {
+                    lis[j].classList.remove('active');
+                  }
+                  lis[index].classList.add('active');
+                  break;
+                }
+              }
+            })
+          })
         }
       })
+    },
+    methods: {
+      addActive(i) {
+        let lis = document.querySelectorAll('.menu-wrapper ul li');
+        for (let j=0; j < lis.length; j++) {
+          lis[j].classList.remove('active');
+        }
+        lis[i].classList.add('active');
+        let flis = document.querySelectorAll('.foods-wrapper>ul>li');
+        // console.log(flis);
+        // let scorllHeight = 0;
+        // for (let a=0; a < i; a++) {
+        //   scorllHeight += flis[a].offsetHeight;
+        //   // console.log(scorllHeight);
+        // }
+        // this.foodScroll.scrollBy(0, scorllHeight);
+        this.foodScroll.scrollToElement(flis[i],200);
+      }
     }
 }
 </script>
@@ -124,7 +169,7 @@ export default {
     }
     .foods-wrapper {
       flex: 1;
-      overflow: scroll;
+      overflow: hidden;
       >ul {
         width: 100%;
         .food-list {
@@ -208,31 +253,10 @@ export default {
                   }
                 }
               }
-              .choice {
+              .carcontrols {
                 position: absolute;
                 bottom: 10px;
                 right: 22px;
-                .reduce {
-                  display: inline-block;
-                  font-size: 20px;
-                  color: rgb(0,160,220);
-                  line-height: 24px;
-                  vertical-align: middle;
-                }
-                .num {
-                  display: inline-block;
-                  margin: 0 12px;
-                  font-size: 10px;
-                  color: rgb(147,153,159);
-                  line-height: 24px;
-                }
-                .add {
-                  display: inline-block;
-                  font-size: 20px;
-                  color: rgb(0,160,220);
-                  line-height: 24px;
-                  vertical-align: middle;
-                }
               }
             }
           }

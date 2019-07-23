@@ -16,7 +16,19 @@
 </template>
 <script>
 export default {
-    
+  data() {
+    return {
+      foodsInfo: {}
+    }
+  },
+  created() {
+    this.foodsInfo = this.$store.commit('getInfo'); 
+  },
+  computed: {
+    totalPrices () {
+      
+    }
+  }
 }
 </script>
 <style lang="less" scoped>
