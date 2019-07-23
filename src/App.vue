@@ -9,7 +9,7 @@
       <!-- 商家 -->
       <router-link class="merchant" to="/shops" tag='div'>商家</router-link>
     </nav>
-    <router-view></router-view>
+    <router-view :seller="seller"></router-view>
   </div>
 </template>
 <script>

@@ -42,9 +42,11 @@ export default {
 </script>
 <style lang="less" scoped>
   .star {
+    display: inline-block;
     .star-item {
       display: inline-block;
       background-repeat: no-repeat;
+      vertical-align: middle;
     }
     &.star-48 {
       .star-item {
