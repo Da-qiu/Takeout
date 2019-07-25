@@ -7,10 +7,10 @@
         </div>
         <span class="totalPrices">￥0</span>
       </div>
-      <span class="info">另需配送费￥4元</span>
+      <span class="info">另需配送费￥{{seller.deliveryPrice}}元</span>
     </div>
     <div class="right">
-      <span class="startPrice">￥20起送</span>
+      <span class="startPrice">￥{{seller.minPrice}}起送</span>
     </div>
   </div>
 </template>
@@ -19,6 +19,11 @@ export default {
   data() {
     return {
       foodsInfo: {}
+    }
+  },
+  props: {
+    seller: {
+      type: Object
     }
   },
   created() {
@@ -37,6 +42,7 @@ export default {
     height: 46px;
     background-color: #141d27;
     position: fixed;
+    z-index: 999;
     bottom: 0;
     left: 0;
     display: flex;

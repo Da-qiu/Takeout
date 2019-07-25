@@ -3,23 +3,35 @@
     <Header :seller="seller"></Header>
     <nav class="navbar">
       <!-- 商品 -->
-      <router-link class="product" to="/goods" tag='div'>商品</router-link>
+      <div @click="addFooter">
+        <router-link class="product" to="/goods" tag='div'>商品</router-link>
+      </div>
+      
       <!-- 评价 -->
-      <router-link class="evaluate" to="/ratings" tag='div'>评价</router-link>
+      <div @click="delFooter">
+        <router-link class="evaluate" to="/ratings" tag='div'>评价</router-link>
+      </div>
+      
       <!-- 商家 -->
-      <router-link class="merchant" to="/shops" tag='div'>商家</router-link>
+      <div @click="delFooter">
+        <router-link class="merchant" to="/shops" tag='div'>商家</router-link>
+      </div>
+      
     </nav>
     <router-view :seller="seller"></router-view>
+    <Footer :seller="seller" v-show="flag"></Footer>
   </div>
 </template>
 <script>
 import Header from './components/header/header.vue'
+import Footer from './components/footer/footer.vue'
 
 const ERR_OK = 0;
 
 export default {
   data(){
     return {
+      flag: true,
       seller: {},
       goodsInfo: {}
     }
@@ -37,8 +49,17 @@ export default {
       this.$store.commit('storeInit', JSON.parse(info));
     }
   },
+  methods: {
+    delFooter () {
+      this.flag = false;
+    },
+    addFooter () {
+      this.flag = true;
+    }
+  },
   components:{
-    Header
+    Header,
+    Footer
   }
 }
 </script>
@@ -55,7 +76,7 @@ export default {
       position: relative;
       div {
         flex: 1;
-        line-height: 14px;
+        line-height: 40px;
         text-align: center;
         font-size: 14px;
         color: rgb(77,85,93);

@@ -10,57 +10,61 @@
     </div>
     <!-- 右侧食物列表 -->
     <div class="foods-wrapper" ref="foodsWrapper">
-      <ul ref="ulWrapper">
+      <ul ref="ulWrapper" class="ulWrapper">
         <li class="food-list" v-for="(item, i) in goods" :key='i'>
           <h1 class="title">{{item.name}}</h1>
-          <ul>
+          <ul class='ull'>
             <li class="food-item" v-for="(food,index) in item.foods" :key="index">
-              <div class="icon">
-                <img :src="food.icon" alt="食物图片" width="100%" height="100%">
-              </div>
-              <div class="content">
-                <h2 class="name">{{food.name}}</h2>
-                <p class="desc">{{food.description}}</p>
-                <div class="extra">
-                  <span>月售{{food.sellCount}}份</span>
-                  <span>好评率{{food.rating}}%</span>
+              <router-link :to="{name: 'detail', query: {id1: i, id2: index}}" tag='div'>
+                <div class="icon">
+                  <img :src="food.icon" alt="食物图片" width="100%" height="100%">
                 </div>
-                <div class="price">
-                  <span class="nowPrice">￥{{food.price}}</span>
-                  <span class="oldPrice" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
+                <div class="content">
+                  <h2 class="name">{{food.name}}</h2>
+                  <p class="desc">{{food.description}}</p>
+                  <div class="extra">
+                    <span>月售{{food.sellCount}}份</span>
+                    <span>好评率{{food.rating}}%</span>
+                  </div>
+                  <div class="price">
+                    <span class="nowPrice">￥{{food.price}}</span>
+                    <span class="oldPrice" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
+                  </div>
                 </div>
-              </div>
-              <Carcontrols class="carcontrols"></Carcontrols>
+              </router-link>
+              <Carcontrols class="carcontrols"></Carcontrols> 
             </li>
           </ul>
         </li>
       </ul>
     </div>
-    <Footer></Footer>
+    <!-- 商品详情页组件 -->
+    <router-view></router-view>
   </div>
 </template>
 <script>
 import Bscroll from 'better-scroll'
 import Carcontrols from '../../components/carcontrols/carcontrols.vue'
-import Footer from '../../components/footer/footer.vue'
+import Detail from '../detailPage/detailPage.vue'
 const ERR_OK = 0;
 export default {
-    data(){
-      return {
-        goods: [],
-        active: [1]
-      }
-    },
-    props: {
-      seller: {
-        type: Object
-      }
-    },
-    components: {
-      Carcontrols,
-      Footer
-    },
-    created() {
+  data(){
+    return {
+      goods: [],
+      active: [1],
+      detail: ''
+    }
+  },
+  props: {
+    seller: {
+      type: Object
+    }
+  },
+  components: {
+    Carcontrols,
+    Detail
+  },
+  created() {
       this.$http.get('/api/goods').then(result => {
         result = result.body;
         if (result.errno === ERR_OK) {
@@ -90,25 +94,25 @@ export default {
           })
         }
       })
-    },
-    methods: {
-      addActive(i) {
-        let lis = document.querySelectorAll('.menu-wrapper ul li');
-        for (let j=0; j < lis.length; j++) {
-          lis[j].classList.remove('active');
-        }
-        lis[i].classList.add('active');
-        let flis = document.querySelectorAll('.foods-wrapper>ul>li');
-        // console.log(flis);
-        // let scorllHeight = 0;
-        // for (let a=0; a < i; a++) {
-        //   scorllHeight += flis[a].offsetHeight;
-        //   // console.log(scorllHeight);
-        // }
-        // this.foodScroll.scrollBy(0, scorllHeight);
-        this.foodScroll.scrollToElement(flis[i],200);
+  },
+  methods: {
+    addActive(i) {
+      let lis = document.querySelectorAll('.menu-wrapper ul li');
+      for (let j=0; j < lis.length; j++) {
+        lis[j].classList.remove('active');
       }
+      lis[i].classList.add('active');
+      let flis = document.querySelectorAll('.foods-wrapper>ul>li');
+      // console.log(flis);
+      // let scorllHeight = 0;
+      // for (let a=0; a < i; a++) {
+      //   scorllHeight += flis[a].offsetHeight;
+      //   // console.log(scorllHeight);
+      // }
+      // this.foodScroll.scrollBy(0, scorllHeight);
+      this.foodScroll.scrollToElement(flis[i],200);
     }
+  }
 }
 </script>
 <style lang="less" scoped>
@@ -192,6 +196,7 @@ export default {
               width: 100%;
               padding: 18px;
               position: relative;
+              transition: all 1s ease;
               &:last-child {
                 &::after {
                   display: none;
@@ -214,7 +219,7 @@ export default {
                 margin-right: 10px;
               }
               .content {
-                max-width: 150px;
+                max-width: 136px;
                 display: inline-block;
                 vertical-align: top;
                 padding-top: 2px;

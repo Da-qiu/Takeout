@@ -1,8 +1,8 @@
 <template>
   <div class="carcontrols">
     <div class="choice">
-      <span class="reduce icon-remove_circle_outline" @click="reduce"></span>
-      <span class="num">{{count}}</span>
+      <span class="reduce icon-remove_circle_outline" @click="reduce" v-show="count"></span>
+      <span class="num" v-show="count">{{count}}</span>
       <span class="add icon-add_circle" @click="add"></span>
     </div>
   </div>

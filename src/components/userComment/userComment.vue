@@ -140,6 +140,9 @@ export default {
           border-bottom: 1px solid rgba(7,17,27,0.1);
           padding-bottom: 18px;
           margin-top: 18px;
+          &:last-child {
+            border-bottom: none;
+          }
           img {
             display: inline-block;
             border-radius: 50%;
@@ -147,7 +150,7 @@ export default {
             vertical-align: top;
           }
           .content-wrapper {
-            max-width: 260px;
+            max-width: 240px;
             display: inline-block;
             .name {
               font-size: 10px;

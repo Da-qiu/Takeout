@@ -238,7 +238,7 @@ export default {
       width: 100%;
       height: 100%;
       background-color: rgba(7, 17, 27, 0.8);
-      z-index: 999;
+      z-index: 9999;
       overflow: auto;
       .detail-wrapper {
         min-height: 100%;
@@ -268,7 +268,7 @@ export default {
             align-items: center;
             .line {
               flex: 1;
-              height: 2px;
+              height: 1px;
               background-color: rgba(255,255,255,0.2);
             }
             .text {
