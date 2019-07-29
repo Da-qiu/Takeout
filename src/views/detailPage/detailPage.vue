@@ -135,7 +135,7 @@ export default {
       let b = h - y - 50;
       this.$nextTick(() => {
         el.style.transform = `translate(-${a}px, ${b}px)`;
-        el.style.transition = 'all 0.6s cubic-bezier(.42,-0.19,.64,.47)';
+        el.style.transition = 'all 0.5s cubic-bezier(.42,-0.19,.64,.47)';
       })
       done() 
     },

@@ -50,7 +50,7 @@ export default {
         let that = this;
         let timeId = setTimeout(function () {
           that.flag = true;
-        }, 600)
+        }, 500)
       }
     }
   }, 
