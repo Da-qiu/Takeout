@@ -83,7 +83,7 @@ export default {
       display: flex;
       padding: 18px 0;
       .header-left {
-        flex: 2;
+        flex: 1;
         border-right: 1px solid #ECEDED;
         .content {
           .score {
@@ -110,7 +110,7 @@ export default {
         }
       }
       .header-right {
-        flex: 3;
+        flex: 2;
         >div {
           margin: 0 24px;
           .text {

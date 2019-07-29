@@ -16,7 +16,11 @@
         <span class="now">￥{{food.price}}</span>
         <span class="old">￥{{food.oldPrice}}</span>
       </div>
-      <div class="add-car">加入购物车</div>
+      <div class="add-car" @click='addCar($event)' v-if='!show'>加入购物车</div>
+      <!-- 控件组件 --> 
+      <Carcontrols class='controls' v-else @toggle='toggle' :animateover='animateover'
+      :foodName='food.name' :foodPrice='food.price' @reduce='reduce' @add="add"></Carcontrols>
+      
     </div>
     <!-- 分割条 -->
     <div class="split"></div>
@@ -35,50 +39,149 @@
       <h3 class="title">商品评价</h3>
       <UserComment :ratings="food.ratings" :rateTime="rateTime"></UserComment>
     </div>
+    <!-- 购物车小球 --> 
+    <transition @beforeEnter='beforeEnter' @enter='enter' @afterEnter='afterEnter' @afterLeave='afterLeave'>
+      <div class="ball" v-show="ballFlag" ref='ball'></div>
+    </transition>
   </div>
 </template>
 <script>
 import UserComment from '../../components/userComment/userComment.vue'
+import Carcontrols from '../../components/carcontrols/carcontrols.vue'
+import { setInterval, clearInterval } from 'timers';
 
 export default {
   data () {
     return {
+      ballFlag: false,
+      animateover: true,
       food: {},
       goods: [],
-      rateTime: []
+      rateTime: [],
+      count: 0,
+      i: 0,
+      index: 0
+    }
+  },
+  computed: {
+    show () {
+      if (this.count && this.$store.state.view) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    change () {
+      return this.$store.state.change
+    }
+  },
+  watch: {
+    change () {
+      let that = this;
+      function fn (num) {
+        that.count = num;
+      }
+      this.$store.commit('getCount', {name: this.food.name, fun: fn});
     }
   },
   methods: {
     goback () {
-      window.history.go(-1);
+      history.back();
+    },
+    addCar (e) {
+      this.$store.commit('addFood', this.food);
+      let that = this;
+      function fn (num) {
+        that.count = num;
+      }
+      this.$store.commit('getCount', {name: this.food.name, fun: fn});
+
+      let x = e.target.getBoundingClientRect().left + 10
+      let y = e.target.getBoundingClientRect().top - 10
+      let pos = [x, y];
+      this.toggle(pos);
+    },
+    add() {
+      let that = this;
+      function fn (num) {
+        that.count = num;
+      }
+      this.$store.commit('getCount', {name: this.food.name, fun: fn});
+    },
+    reduce () {
+      let that = this;
+      function fn (num) {
+        that.count = num;
+      }
+      this.$store.commit('getCount', {name: this.food.name, fun: fn});
+    },
+    toggle (e) {
+      if (this.animateover) {
+        this.animateover = false;
+        this.ballFlag = true;
+        this.ballPosition = e
+        this.$refs.ball.style.left = e[0]+'px';
+        this.$refs.ball.style.top = e[1]-16 + 'px';
+      }
+    },
+    beforeEnter (el) {
+      el.style.transform = 'translate(0, 0)';
+    },
+    enter (el,done) {
+      let x = el.getBoundingClientRect().left;
+      let y = el.getBoundingClientRect().top;
+      let h = window.innerHeight;
+      let a = x - 30;
+      let b = h - y - 50;
+      this.$nextTick(() => {
+        el.style.transform = `translate(-${a}px, ${b}px)`;
+        el.style.transition = 'all 0.6s cubic-bezier(.42,-0.19,.64,.47)';
+      })
+      done() 
+    },
+    afterEnter (el) {
+      this.ballFlag = false;
+      el.style.transform = 'translate(0, 0)';
+    },
+    afterLeave (el) {
+      this.animateover = true;
     }
   },
   created () {
-    this.$http.get('/api/goods').then((res) => {
-      res = res.body;
-      if (res.errno === 0) {
-        this.goods = res.data;
-      }
-      let a = this.$route.query.id1;
-      let b = this.$route.query.id2;
-      this.food = this.goods[a].foods[b];
-      let ratings = this.food.ratings;
-      for (let i=0; i < ratings.length; i++) {
-        let time = ratings[i].rateTime;
-        let date = new Date(time);
-        let year = date.getFullYear();
-        let month = String((date.getMonth() + 1)).padStart(2,'0');
-        let day = String(date.getDate()).padStart(2,'0');
-        let hours = String(date.getHours()).padStart(2,'0');
-        let minutes = String(date.getMinutes()).padStart(2,'0');
-        let seconds = String(date.getSeconds()).padStart(2,'0');
-        let newDate = year + "-" + month + "-" + day + " " + hours + ':' + minutes + ':' + seconds;
-        this.rateTime.push(newDate);
-      }
+    if (sessionStorage.getItem("goods") && sessionStorage.getItem("index")) {
+      this.$store.state.goods = JSON.parse(sessionStorage.getItem('goods'))
+      this.$store.state.setIndex = JSON.parse(sessionStorage.getItem('index'))
+    }
+    window.addEventListener('beforeunload', () => {
+      sessionStorage.setItem('goods', JSON.stringify(this.$store.state.goods))
+      sessionStorage.setItem('index', JSON.stringify(this.$store.state.setIndex))
     })
+    this.i = this.$store.state.setIndex[0];
+    this.index = this.$store.state.setIndex[1];
+    let that = this;
+    this.goods = this.$store.state.goods;
+    this.food = this.goods[this.i].foods[this.index];
+    this.$store.commit('getCount', {name: this.food.name, fun: fn});
+    let ratings = this.food.ratings;
+    for (let i=0; i < ratings.length; i++) {
+      let time = ratings[i].rateTime;
+      let date = new Date(time);
+      let year = date.getFullYear();
+      let month = String((date.getMonth() + 1)).padStart(2,'0');
+      let day = String(date.getDate()).padStart(2,'0');
+      let hours = String(date.getHours()).padStart(2,'0');
+      let minutes = String(date.getMinutes()).padStart(2,'0');
+      let seconds = String(date.getSeconds()).padStart(2,'0');
+      let newDate = year + "-" + month + "-" + day + " " + hours + ':' + minutes + ':' + seconds;
+      this.rateTime.push(newDate);
+    }
+    function fn (num) {
+      that.count = num;
+    }
   },
   components: {
     UserComment,
+    Carcontrols
   }
 }
 </script>
@@ -161,6 +264,11 @@ export default {
         right: 0;
         bottom: 0;
       }
+      .controls {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+      }
     }
     .split {
       width: 100%;
@@ -194,6 +302,16 @@ export default {
         line-height: 14px;
         margin: 18px 18px 0 18px;
       }
+    }
+    .ball {
+      position: fixed;
+      right: 0;
+      top: 0;
+      width: 20px;
+      height: 20px;
+      background-color: rgb(0,160,220);
+      border-radius: 50%;
+      z-index: 10000;
     }
   }
   

@@ -18,7 +18,14 @@ export default new Router({
     {
       path: '/goods',
       name: 'goods',
-      component: Goods
+      component: Goods,
+      children: [
+        {
+          path: 'detail',
+          name: 'detail',
+          component: Detail
+        }
+      ]
     },
     {
       path: '/ratings',
@@ -29,11 +36,6 @@ export default new Router({
       path: '/shops',
       name: 'shops',
       component: Shops
-    },
-    {
-      path: '/detail',
-      name: 'detail',
-      component: Detail
     }
   ]
 })

@@ -18,13 +18,19 @@
       </div>
       
     </nav>
+    <!-- 路由跳转组件 -->
     <router-view :seller="seller"></router-view>
-    <Footer :seller="seller" v-show="flag"></Footer>
+
+    <transition>
+      <Detailcar v-if='show'></Detailcar>
+    </transition>
+    <Footer :seller="seller" v-show="flag" @showDetailcar="showDetailcar"></Footer>
   </div>
 </template>
 <script>
 import Header from './components/header/header.vue'
 import Footer from './components/footer/footer.vue'
+import Detailcar from './components/detailCar/detailCar.vue'
 
 const ERR_OK = 0;
 
@@ -32,40 +38,57 @@ export default {
   data(){
     return {
       flag: true,
-      seller: {},
-      goodsInfo: {}
+      show: false,
+    }
+  },
+  computed: {
+    seller () {
+      return this.$store.state.seller;
     }
   },
   created() {
-    this.$http.get('/api/seller').then((res) => {
-      res = res.body;
-      if (res.errno === ERR_OK) {
-        this.seller = res.data;
-        // console.log(this.seller);
-      }
-    })
-    let info = localStorage.getItem('goodsInfo');
-    if(info) {
-      this.$store.commit('storeInit', JSON.parse(info));
-    }
+    this.$store.dispatch('initSeller')
   },
   methods: {
+    reload () {
+      this.show = false;
+      this.$nextTick(() => {
+        this.show = true
+      })
+    },
     delFooter () {
       this.flag = false;
     },
     addFooter () {
       this.flag = true;
+    },
+    showDetailcar () {
+      this.show = !this.show;
+      if (this.show) {
+        this.$store.state.reloade = false;
+        this.$store.state.view = false;
+      } else {
+        this.$store.state.reloade = true;
+        this.$store.state.view = true;
+      }
     }
   },
   components:{
     Header,
-    Footer
+    Footer,
+    Detailcar
   }
 }
 </script>
 
 <style lang="less" scoped>
   #app {
+    .v-enter,.v-leave-to {
+      transform: translateY(100%);
+    }
+    .v-enter-active,.v-leave-active {
+      transition: all 0.5s;
+    }
     .navbar {
       width: 100%;
       height: 40px;

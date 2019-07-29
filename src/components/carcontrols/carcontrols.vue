@@ -1,38 +1,85 @@
 <template>
   <div class="carcontrols">
     <div class="choice">
-      <span class="reduce icon-remove_circle_outline" @click="reduce" v-show="count"></span>
+      <transition>
+        <span class="reduce icon-remove_circle_outline" @click="reduce" v-show="count"></span>
+      </transition>
       <span class="num" v-show="count">{{count}}</span>
-      <span class="add icon-add_circle" @click="add"></span>
+      <span class="add icon-add_circle" @click="add($event)"></span>
     </div>
   </div>
 </template>
 <script>
+import { setTimeout, clearTimeout, clearInterval } from 'timers';
+import { timingSafeEqual } from 'crypto';
 export default {
   data() {
     return {
+      flag: true,
       count: 0
+    }
+  },
+  props: {
+    animateover: {
+      type: Boolean
+    },
+    foodName: {
+      type: String
+    },
+    foodPrice: {
+      type: Number
     }
   },
   methods: {
     reduce() {
       if(this.count > 0) {
         this.count--;
+        this.$store.commit('reduceFood', {name:this.foodName, price: this.foodPrice})
       } else {
         this.count = 0;
       }
+      this.$emit('reduce');
     },
-    add() {
-      this.count++;
+    add(e) {
+      if (this.flag && this.animateover) {
+        this.$emit('add');
+        this.flag = false;
+        this.count++;
+        this.$store.commit('addFood', {name:this.foodName, price: this.foodPrice})
+        this.$emit('toggle',[e.target.getBoundingClientRect().left, e.target.getBoundingClientRect().top]);
+        let that = this;
+        let timeId = setTimeout(function () {
+          that.flag = true;
+        }, 600)
+      }
+    }
+  }, 
+  created () {
+    let that = this;
+    this.$store.commit('getCount', {name: this.foodName, fun: fn});
+    function fn (num) {
+      that.count = num;
     }
   }
 }
 </script>
 <style lang="less" scoped>
+  .v-enter {
+    transform: translateX(50px) rotate(180deg);    
+  }
+  .v-leave-to {
+    transform: translateX(50px) rotate(180deg);
+  }
+  .v-enter-active,.v-leave-active {
+    transition: all 0.5s;
+  }
   .carcontrols {
-    .choice {
+    position: relative;
+    .choice { 
       .reduce {
-        display: inline-block;
+        position: absolute;
+        top: 0;
+        right: 50px;
         font-size: 20px;
         color: rgb(0,160,220);
         line-height: 24px;
